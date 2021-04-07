@@ -1,5 +1,4 @@
 const centra = require('centra')
-const { PartialTextBasedChannel } = require('discord.js')
 const uuidUtil = require('./util/uuidUtil')
 const nameURL = `https://api.mojang.com/`
 const hypixelURL = 'https://api.hypixel.net/'
@@ -232,4 +231,6 @@ class Hynfo {
     }
     
 }
+const client = new Hynfo({api_key: process.env.api_key})
 
+module.exports = Hynfo;

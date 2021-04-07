@@ -13,5 +13,13 @@
     "centra": "^2.4.2",
     "isomorphic-unfetch": "^3.1.0"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yanuu1337/hynfo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yanuu1337/hynfo/issues"
+  },
+  "homepage": "https://github.com/yanuu1337/hynfo#readme"
 }
