@@ -1,3 +1,24 @@
+/*
+Copyright 2021 Maciej Januś
+
+Permission is hereby granted, free of charge, to any person obtaining a 
+copy of this software and associated documentation 
+files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, 
+modify, merge, publish, distribute, sublicense, and/or 
+sell copies of the Software, and to permit persons to
+whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 const centra = require('centra')
 const uuidUtil = require('./util/uuidUtil')
 const nameURL = `https://api.mojang.com/`
@@ -12,25 +33,22 @@ class Hynfo {
         this.api_key = cnf.api_key
         this.basePath = 'https://api.hypixel.net/'
     }
-
-
     /**
      * 
      * @param {string} name - Get full name history from mojang API 
      * @returns Name history and timestamps
      */
     async getNames(name) {
-        let UUID = await uuidUtil('name', `${name}`)
+        let UUID = await uuidUtil('name', name)
         const res = await centra(nameURL).path(`user/profiles/${UUID}/names`).send()
         const jsonified = await res.json()
-        if(jsonified.success) {
-            return jsonified;
+        if(jsonified.error) {
+            throw new Error(jsonified.errorMessage || jsonified)
         } else {
-            throw new Error(jsonified.cause || res)
+            return jsonified;
+            
         }
     }
-
-
     /**
      * 
      * @param {String} ign - Player IGN (in a guild) 
@@ -48,8 +66,6 @@ class Hynfo {
         } else throw new Error(res.cause || res)
 
     }
-
-
     /**
      * @returns Watchdog Statistics
      */
@@ -63,8 +79,6 @@ class Hynfo {
         return body;
         
     }
-
-
     /**
      * @param {String} key - API Key to search 
      * @returns API Key info
@@ -113,8 +127,19 @@ class Hynfo {
         if(!body.success) throw new Error(body.cause || body)
         return body;
     }
-   
-    
+    /**
+     * 
+     * @param {String} gname - Guild Name
+     * @returns - Guild Info
+     */
+    async getGuild(gname) {
+        const res = await centra(hypixelURL).path('/guild').query({
+            'key': this.api_key,
+            'name': gname,
+        }).send()
+        const body = await res.json()
+        return body;
+    }
     /**
      * 
      * @param {String} name - Player IGN 
@@ -163,10 +188,7 @@ class Hynfo {
         const body = await res.json()
         if(!body.success) throw new Error(body.cause || body)
         return body;
-
-
     }
-
     /**
      * 
      * @param {String} ign - Players IGN 
@@ -206,7 +228,6 @@ class Hynfo {
      * @param {String} mode - Leaderboard Game Mode  
      * @returns Leaderboards for the selected Game Mode
      */
-     
     async getLeaderboard(mode = String) {
         const lbmodes = ['TNTGAMES', 'SKYCLASH', 'DUELS', 'PAINTBALL', 'ARENA', 'SPEED_UHC', 'WALLS3', 'SUPER_SMASH', 'GINGERBREAD', 'BUILD_BATTLE', 'MCGO', 
         'VAMPIREZ', 'TRUE_COMBAT', 'BATTLEGROUND', 'SKYWARS', 'SURVIVAL_GAMES', 'BEDWARS', 'QUAKECRAFT', 'UHC', 'ARCADE', 'MURDER_MYSTERY', 'WALLS']
@@ -218,19 +239,12 @@ class Hynfo {
         if(!body.success) throw new Error(body.cause || body)
         return body['leaderboards'][mode.toUpperCase()];
     }
+    /**
+     * 
+     * @returns Hynfo Support Mail
+     */
     async HynfoSupport() {
-        return String('mailto:yanuu.why@gmail.com');
+        return String('yanuu.why@gmail.com');
     }
-    async getGuild(gname) {
-        const res = await centra(hypixelURL).path('/guild').query({
-            'key': this.api_key,
-            'name': gname,
-        }).send()
-        const body = await res.json()
-        return body;
-    }
-    
 }
-const client = new Hynfo({api_key: process.env.api_key})
-
 module.exports = Hynfo;
