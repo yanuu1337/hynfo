@@ -31,10 +31,19 @@ client.getPlayer('YaNuu_').then(async res => {
 -  `.getSkyblockProfile(PROFILEID)` - Get skyblock profile by its ID
 - # Misc
 - `.getKeyInfo(API_KEY)` - Get Info about an API key (owner, limits etc.)
-- `.getNames(IGN)` - Get all past names and timestamps from Mojang. (search by current name)
+- `.getNames(IGN)` - Get all past names and timestamps from Mojang (search by current name)
 -   `.getWatchdog()` - Get current watchdog statistics
 - `.getLBs()` - Get all Leaderboards
-- `.getLeaderBoard()` - Get Leaderboard for a specific gamemode.
+- `.getLeaderBoard(GAME_MODE)` - Get Leaderboard for a specific game mode
+- # Resources
+- `.getAchievements()` - Get all Achievements
+- `.getGameAchievements(GAME_MODE)` - Get achievements for a specific game mode
+- `.getChallenges()` - Get all challenges
+- `.getGameChallenges(GAME_MODE)` - Get challenges for a specific game mode
+- `.getQuests()` - Get all quests
+- `.getGameQuests(GAME_MODE)` - Get Quests for a specific game mode
+- `.getGuildAchievements()` - Get all guild achievements
+- `.getGuildPermissions()` - Get all guild permissions
 
 ## Package used
 - [centra] - The core lightweight HTTP client for [Node.JS]
