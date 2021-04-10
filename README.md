@@ -13,29 +13,29 @@ client.getPlayer('YaNuu_').then(async res => {
 })
 ```
 
-## Install
+# Install
 `npm install hynfo`
 
-## Features
-- # Player
+# Features
+- ## Player
 - `.getPlayer(IGN)` - Access player info 
 - `.getFriends(IGN)` - Get Players friends
 - `.getRecentGames(IGN)` - Get recent games played by the user
 - `.IfOnline(IGN)` - Get a boolean whether the user is online or not
 - `.getSession(IGN)` - Get current player status (game, status, etc.)
-- # Guild
+- ## Guild
 - `.getGuild(GUILDNAME)` - Access Guild info
 - `.findGuildByPlayer(IGN)` - Access Guild Info based on a user
-- # Skyblock
+- ## Skyblock
 -  `.getProfileFromName(IGN, CUTE_NAME)` - Get user profile by cute name (Watermelon/Grape/etc.) 
 -  `.getSkyblockProfile(PROFILEID)` - Get skyblock profile by its ID
-- # Misc
+- ## Misc
 - `.getKeyInfo(API_KEY)` - Get Info about an API key (owner, limits etc.)
 - `.getNames(IGN)` - Get all past names and timestamps from Mojang (search by current name)
 -   `.getWatchdog()` - Get current watchdog statistics
 - `.getLBs()` - Get all Leaderboards
 - `.getLeaderBoard(GAME_MODE)` - Get Leaderboard for a specific game mode
-- # Resources
+- ## Resources
 - `.getAchievements()` - Get all Achievements
 - `.getGameAchievements(GAME_MODE)` - Get achievements for a specific game mode
 - `.getChallenges()` - Get all challenges
@@ -45,7 +45,7 @@ client.getPlayer('YaNuu_').then(async res => {
 - `.getGuildAchievements()` - Get all guild achievements
 - `.getGuildPermissions()` - Get all guild permissions
 
-## Package used
+# Package used
 - [centra] - The core lightweight HTTP client for [Node.JS]
 
 
