@@ -1,12 +1,12 @@
 {
   "name": "hynfo",
-  "version": "1.0.4",
+  "version": "2.0.0",
   "description": "Node.js Hypixel API wrapper!",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": ["api", "hypixel", "wrapper", "hynfo", "minecraft"],
   "author": "yanuu",
   "license": "MIT",
   "dependencies": {

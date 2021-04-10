@@ -26,7 +26,6 @@ const hypixelURL = 'https://api.hypixel.net/'
 
 class Hynfo {
     /**
-     * 
      * @param {string} api_key - Valid Hypixel API Key (use "/api new" in-game to generate one) 
      */
     constructor(cnf) {
@@ -34,7 +33,6 @@ class Hynfo {
         this.basePath = 'https://api.hypixel.net/'
     }
     /**
-     * 
      * @param {string} name - Get full name history from mojang API 
      * @returns Name history and timestamps
      */
@@ -49,8 +47,27 @@ class Hynfo {
             
         }
     }
+
     /**
      * 
+     * GUILDS
+     * 
+     */
+
+    /**
+     * @param {String} gname - Guild Name
+     * @returns - Guild Info
+     */
+     async getGuild(gname) {
+        const res = await centra(hypixelURL).path('/guild').query({
+            'key': this.api_key,
+            'name': gname,
+        }).send()
+        const body = await res.json()
+        return body;
+    }
+
+    /**
      * @param {String} ign - Player IGN (in a guild) 
      * @returns Guild info
      */
@@ -66,34 +83,19 @@ class Hynfo {
         } else throw new Error(res.cause || res)
 
     }
+    
+    
     /**
-     * @returns Watchdog Statistics
+     * 
+     * PLAYER & SESSION
+     * 
      */
-    async getWatchdog() {
-        const res = await centra(hypixelURL).path('/watchdogstats').query({
-            'key': this.api_key
-        }).send()
-        
-        const body = await res.json()
-        if(!body.success) throw new Error(body.cause || body)
-        return body;
-        
-    }
+
+
     /**
-     * @param {String} key - API Key to search 
-     * @returns API Key info
+     * @param {String} name - IGN of the player 
+     * @returns Friends
      */
-    async getKeyInfo(key) {
-        const res = await centra(hypixelURL).path('/key').query({
-            'key': key
-
-        }).send()
-        if(!res.json().success) throw new Error(res.json().cause || res)
-        const body = await res.json()
-        if(!body.success) throw new Error(body.cause || body)
-        return body;
-    }
-
     async getFriends(name) {
         let UUID = await uuidUtil('name', name)
         const res = await centra(hypixelURL).path('/friends').query({
@@ -105,6 +107,11 @@ class Hynfo {
         if(!body.success) throw new Error(body.cause || body)
         return body; 
     }
+    
+    /**
+     * @param {String} name - IGN of the player 
+     * @returns - Players recent games
+     */
     async getRecentGames(name) {
         let UUID = await uuidUtil('name', name)
         const res = await centra(hypixelURL).path('/recentgames').query({
@@ -116,6 +123,12 @@ class Hynfo {
         if(!body.success) throw new Error(body.cause || body)
         return body;
     }
+
+
+    /**
+     * @param {String} name - IGN of the player 
+     * @returns - Players stats
+     */
     async getPlayer(name) {
         let UUID = await uuidUtil('name', name)
         const res = await centra(hypixelURL).path('/player').query({
@@ -127,21 +140,8 @@ class Hynfo {
         if(!body.success) throw new Error(body.cause || body)
         return body;
     }
+    
     /**
-     * 
-     * @param {String} gname - Guild Name
-     * @returns - Guild Info
-     */
-    async getGuild(gname) {
-        const res = await centra(hypixelURL).path('/guild').query({
-            'key': this.api_key,
-            'name': gname,
-        }).send()
-        const body = await res.json()
-        return body;
-    }
-    /**
-     * 
      * @param {String} name - Player IGN 
      * @returns Boolean whether player is online (true) or offline (false)
      */
@@ -158,7 +158,6 @@ class Hynfo {
     }
 
     /**
-     * 
      * @param {String} name - Player IGN
      * @returns Player session (status, game, lobby, etc.)
      */
@@ -173,11 +172,17 @@ class Hynfo {
         if(!body.success) throw new Error(body.cause || body)
         return (body);
     }
+
+
     /**
      * 
+     * SKYBLOCK
+     * 
+     */
+
+    /**
      * @param {String} [profileId] - Hypixel skyblock profile ID (https://hypixel.net/threads/how-to-get-a-profile-id-from-the-name.3003144/)
      * @returns Skyblock Profile
-     * 
      */
     async getSkyblockProfile(profileId) {
         const res = await centra(hypixelURL).path('/skyblock/profile').query({
@@ -190,7 +195,6 @@ class Hynfo {
         return body;
     }
     /**
-     * 
      * @param {String} ign - Players IGN 
      * @param {String} cutename - Cutename to search through
      * @returns profile_id
@@ -209,6 +213,112 @@ class Hynfo {
             else return false;
         }
     }
+
+
+    /** 
+     * RESOURCES
+    */
+
+    /**
+     * @param {String} key - API Key to search 
+     * @returns API Key info
+     */
+     async getKeyInfo(key) {
+        const res = await centra(hypixelURL).path('/key').query({
+            'key': key
+
+        }).send()
+        if(!res.json().success) throw new Error(res.json().cause || res)
+        const body = await res.json()
+        if(!body.success) throw new Error(body.cause || body)
+        return body;
+    }
+
+    /**
+     * @returns Watchdog Statistics
+     */
+     async getWatchdog() {
+        const res = await centra(hypixelURL).path('/watchdogstats').query({
+            'key': this.api_key
+        }).send()
+        const body = await res.json()
+        if(!body.success) throw new Error(body.cause || body)
+        return body;
+    }
+    /**
+     * @returns All Achievements
+     */
+    async getAchievements() {
+        const res = await centra(hypixelURL).path('/resources/achievements').send()
+        const body = await res.json()
+        if(!body.success) throw new Error(body.cause || body)
+        return body;
+    }
+
+    /**
+     * @param {String} game - Game Mode 
+     * @returns - Achievements for the specified Game Mode
+     */
+    async getGameAchievements(game = String) {
+        const games = ['arcade', 'arena', 'bedwars', 'blitz', 'buildbattle', 'christmas2017', 'copsandcrims', 'duels', 'easter', 'general', 'gingerbread', 'halloween2017', 'housing', 'murdermystery', 'paintball',
+            'pit', 'quake', 'skyblock', 'skyclash', 'skywars', 'speeduhc', 'summer', 'supersmash', 'tntgames', 'truecombat', 'uhc', 'vampirez', 'walls', 'walls3', 'warlords']
+        if(!games.includes(game.toLowerCase())) throw new Error(`There is no game called \`${game}\` that has achievement records!`)
+        const res = await centra(hypixelURL).path('/resources/achievements').send()
+        const body = await res.json()
+        if(!body.success) throw new Error(body.cause || body)
+        return body['achievements'][game.toLowerCase()];
+    }
+
+    /** 
+     * @returns All Challenges
+     */
+    async getChallenges() {
+        const res = await centra(hypixelURL).path('/resources/challenges').send()
+        const body = await res.json()
+        if(!body.success) throw new Error(body.cause || body)
+        return body;
+    }
+
+    /**
+     * 
+     * @param {String} game - Game Mode 
+     * @returns - Challenges for the specified Game Mode
+     */
+    async getGameChallenges(game) {
+        const games = ['arcade', 'arena', 'bedwars', 'hungergames', 'buildbattle', 'truecombat', 'duels', 'mcgo', 'murdermystery', 'paintball', 'quake', 'skyclash', 'skywars', 'supersmash', 
+            'speeduhc', 'gingerbread', 'tntgames', 'uhc', 'vampirez', 'walls', 'walls3',]
+            if(!games.includes(game.toLowerCase())) throw new Error(`There is no game called \`${game}\` that has challenge records!`)
+            const res = await centra(hypixelURL).path('/resources/challenges').send()
+            const body = await res.json()
+            if(!body.success) throw new Error(body.cause || body)
+            return body['challenges'][game.toLowerCase()];
+    } 
+
+
+    /**
+     * @returns - All Quests
+     */
+    async getQuests() {
+        const res = await centra(hypixelURL).path('/resources/quests').send()
+        const body = await res.json()
+        if(!body.success) throw new Error(body.cause || body)
+        return body;
+    }
+
+    /**
+     * @param {String} game - Game Mode 
+     * @returns - Quests for the specified Game Mode
+     */
+    async getGameQuests(game) {
+        const games = ['quake','walls','paintball','hungergames','tntgames','vampirez','walls3','arcade','arena','uhc','mcgo','battleground','supersmash',
+            'gingerbread','skywars','truecombat','skyclash', 'prototype', 'bedwars', 'murdermystery', 'buildbattle', 'duels']
+        if(!games.includes(game.toLowerCase()))	throw new Error(`There is no game called \`${game}\` that has quest records!`)
+        const res = await centra(hypixelURL).path('/resources/quests').send()
+        const body = await res.json()
+        if(!body.success) throw new Error(body.cause || body)
+        return body['quests'][game.toLowerCase()];
+    }
+
     /**
      * 
      * @returns All Hypixel Leaderboards registered
@@ -223,8 +333,7 @@ class Hynfo {
         
     }
 
-    /**
-     * 
+    /** 
      * @param {String} mode - Leaderboard Game Mode  
      * @returns Leaderboards for the selected Game Mode
      */
@@ -239,8 +348,31 @@ class Hynfo {
         if(!body.success) throw new Error(body.cause || body)
         return body['leaderboards'][mode.toUpperCase()];
     }
+
+    /**(SUB) GUILD RESOURCES */
     /**
-     * 
+     * @returns All Guild Achievements
+     */
+    async getGuildAchievements() {
+        const res = await centra(hypixelURL).path('/resources/guilds/achievements').send()
+        const body = await res.json()
+        if(!body.success) throw new Error(body.cause || body)
+        return body;
+
+    }
+
+    /**
+     * @returns All Guild Permissions
+     */
+    async getGuildPermissions() {
+        const res = await centra(hypixelURL).path('/resources/guilds/permissions').send()
+        const body = await res.json()
+        if(!body.success) throw new Error(body.cause || body)
+        return body;
+    }
+
+
+    /**
      * @returns Hynfo Support Mail
      */
     async HynfoSupport() {
