@@ -1,6 +1,6 @@
 {
   "name": "hynfo",
-  "version": "2.1.2",
+  "version": "3.0.0",
   "description": "Node.js Hypixel API wrapper!",
   "main": "index.js",
   "scripts": {
