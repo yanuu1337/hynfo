@@ -45,6 +45,24 @@ client.getPlayer('YaNuu_').then(async res => {
 - `.getGuildAchievements()` - Get all guild achievements
 - `.getGuildPermissions()` - Get all guild permissions
 
+# Useless events (cuz why not)
+- `nameReceive` - Emitted when `getNames` data is received
+- `guildData` - Emitted when `getGuild` OR `findGuildByPlayer` OR `getGuildAchievements` OR `getGuildPermissions` data is received
+- `friendsData` - Emitted when `getFriends` data is received
+- `recentGamesReceive` - Emitted when `getRecentGames` data is received
+- `playerData` - Emitted when `getPlayer` OR `IfOnline` OR `getSession` data is received
+- `skyblockData`- Emitted when `getSkyblockProfile` OR `getProfileFromName` data is received
+- `APIKeyData` - Emitted when `getKeyInfo` data is received
+- `achievementsData` - Emitted when `getAchievements` or `getGameAchievements` data is received
+- `questsData` - Emitted when `getQuests` or `getGameQuests` data is received
+- `lbData` - Emitted when `getLBs` or `getLeaderboard` data is received
+- ## Global Events
+- - `data` - Emitted when any data is received (all of the above events also emit `data`) (data is the only event that contains two params: `type` and `data`)
+- - `resourceData` - Emitted when resource data is received (LBs, Guild/Normal Achievements, Guild Permissions, Watchdog, Quests, Challenges, Key Info)
+- - `skyblockData` - guess 😉 (Emitted when skyblock profile information is received)
+
+
+
 # Package used
 - [centra] - The core lightweight HTTP client for [Node.JS]
 

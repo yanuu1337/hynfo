@@ -20,20 +20,29 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 const centra = require('centra')
+const events = require('events')
 const uuidUtil = require('./util/uuidUtil')
 const nameURL = `https://api.mojang.com/`
 const hypixelURL = 'https://api.hypixel.net/'
 
 class Hynfo {
+    
     /**
      * @param {string} api_key - Valid Hypixel API Key (use "/api new" in-game to generate one) 
      */
     constructor(cnf) {
         this.api_key = cnf.api_key
         this.basePath = 'https://api.hypixel.net/'
+        this.EventEmitter = new events.EventEmitter()
+
     }
+
+
+
     /**
-     * @param {string} name - Get full name history from mojang API 
+     * @event Hynfo#nameReceive
+     * @event Hynfo#data
+     * @param {String} name - Get full name history from mojang API 
      * @returns Name history and timestamps
      */
     async getNames(name) {
@@ -43,7 +52,10 @@ class Hynfo {
         if(jsonified.error) {
             throw new Error(jsonified.errorMessage || jsonified)
         } else {
+            this.EventEmitter.emit('nameReceive', jsonified)
+            this.EventEmitter.emit('data', jsonified)
             return jsonified;
+            
             
         }
     }
@@ -64,7 +76,12 @@ class Hynfo {
             'name': gname,
         }).send()
         const body = await res.json()
-        return body;
+        if(body.error) {
+            throw new Error(body.cause || body)
+        }
+        this.EventEmitter.emit('guildData', body)
+        this.EventEmitter.emit('data', 'guild', body)
+        return res;
     }
 
     /**
@@ -78,9 +95,11 @@ class Hynfo {
             'player': UUID,
         }).json()
 
-        if(res.success) {
-            return res;
-        } else throw new Error(res.cause || res)
+        if(!res.success) throw new Error(res.cause || res)
+        this.EventEmitter.emit('guildData', res)
+        this.EventEmitter.emit('data', res)
+        return res;
+        
 
     }
     
@@ -105,6 +124,8 @@ class Hynfo {
     
         const body = await res.json()
         if(!body.success) throw new Error(body.cause || body)
+        this.EventEmitter.emit('friendsListReceive', body)
+        this.EventEmitter.emit('data', 'friends', body)
         return body; 
     }
     
@@ -121,6 +142,8 @@ class Hynfo {
 
         const body = await res.json()
         if(!body.success) throw new Error(body.cause || body)
+        this.EventEmitter.emit('recentGamesReceive', body)
+        this.EventEmitter.emit('data', 'player', body)
         return body;
     }
 
@@ -137,6 +160,8 @@ class Hynfo {
         }).send()
 
         const body = await res.json()
+        this.EventEmitter.emit('playerData', body)
+        this.EventEmitter.emit('data', 'player', body)
         if(!body.success) throw new Error(body.cause || body)
         return body;
     }
@@ -154,6 +179,9 @@ class Hynfo {
 
         const body = await res.json()
         if(!body.success) throw new Error(body.cause || body)
+        this.EventEmitter.emit('playerData', body)
+        this.EventEmitter.emit('StatusChange', body['status'])
+        this.EventEmitter.emit('data', 'status', body)
         return Boolean(body.session['online'])
     }
 
@@ -169,6 +197,9 @@ class Hynfo {
         }).send()
 
         const body = await res.json()
+        this.EventEmitter.emit('playerData', body)
+        this.EventEmitter.emit('sessionData', body)
+        this.EventEmitter.emit('data', 'session', body)
         if(!body.success) throw new Error(body.cause || body)
         return (body);
     }
@@ -192,6 +223,8 @@ class Hynfo {
 
         const body = await res.json()
         if(!body.success) throw new Error(body.cause || body)
+        this.EventEmitter.emit('skyblockData', body)
+        this.EventEmitter.emit('data', 'skyblock', sb['profiles'][profile])
         return body;
     }
     /**
@@ -209,8 +242,12 @@ class Hynfo {
         if(!body.success) throw new Error(body.cause || body)
         const sb = body['player']['stats']['SkyBlock']
         for(const profile of Object.keys(sb['profiles'])) {
-            if(sb['profiles'][profile]['cute_name'] === cutename) return sb['profiles'][profile]
-            else return false;
+            
+            if(sb['profiles'][profile]['cute_name'] === cutename) {
+                this.EventEmitter.emit('skyblockData', sb['profiles'][profile])
+                this.EventEmitter.emit('data', 'skyblock',sb['profiles'][profile])
+                return sb['profiles'][profile]
+            }else return false;
         }
     }
 
@@ -231,6 +268,9 @@ class Hynfo {
         if(!res.json().success) throw new Error(res.json().cause || res)
         const body = await res.json()
         if(!body.success) throw new Error(body.cause || body)
+        this.EventEmitter.emit('APIKeyData', body)
+        this.EventEmitter.emit('data','key' , body)
+        this.EventEmitter.emit('resourceData',body)
         return body;
     }
 
@@ -243,6 +283,9 @@ class Hynfo {
         }).send()
         const body = await res.json()
         if(!body.success) throw new Error(body.cause || body)
+        this.EventEmitter.emit('watchdogData', body)
+        this.EventEmitter.emit('data', body)
+        this.EventEmitter.emit('resourceData', body)
         return body;
     }
     /**
@@ -252,6 +295,9 @@ class Hynfo {
         const res = await centra(hypixelURL).path('/resources/achievements').send()
         const body = await res.json()
         if(!body.success) throw new Error(body.cause || body)
+        this.EventEmitter.emit('achievementsData', body)
+        this.EventEmitter.emit('data','achievements', body)
+        this.EventEmitter.emit('resourceData', body)
         return body;
     }
 
@@ -266,6 +312,9 @@ class Hynfo {
         const res = await centra(hypixelURL).path('/resources/achievements').send()
         const body = await res.json()
         if(!body.success) throw new Error(body.cause || body)
+        this.EventEmitter.emit('achievementsData', body)
+        this.EventEmitter.emit('data', 'achievements', body)
+        this.EventEmitter.emit('resourceData', body)
         return body['achievements'][game.toLowerCase()];
     }
 
@@ -276,6 +325,9 @@ class Hynfo {
         const res = await centra(hypixelURL).path('/resources/challenges').send()
         const body = await res.json()
         if(!body.success) throw new Error(body.cause || body)
+        this.EventEmitter.emit('challengesData', body)
+        this.EventEmitter.emit('data', 'challenges',body)
+        this.EventEmitter.emit('resourceData', body)
         return body;
     }
 
@@ -291,6 +343,9 @@ class Hynfo {
             const res = await centra(hypixelURL).path('/resources/challenges').send()
             const body = await res.json()
             if(!body.success) throw new Error(body.cause || body)
+            this.EventEmitter.emit('chalengesData', body['challenges'][game.toLowerCase()])
+            this.EventEmitter.emit('data','challenges', body['challenges'][game.toLowerCase()])
+            this.EventEmitter.emit('resourceData', body['challenges'][game.toLowerCase()])
             return body['challenges'][game.toLowerCase()];
     } 
 
@@ -302,6 +357,9 @@ class Hynfo {
         const res = await centra(hypixelURL).path('/resources/quests').send()
         const body = await res.json()
         if(!body.success) throw new Error(body.cause || body)
+        this.EventEmitter.emit('questsData', body)
+        this.EventEmitter.emit('data','quests', body)
+        this.EventEmitter.emit('resourceData', body)
         return body;
     }
 
@@ -316,6 +374,9 @@ class Hynfo {
         const res = await centra(hypixelURL).path('/resources/quests').send()
         const body = await res.json()
         if(!body.success) throw new Error(body.cause || body)
+        this.EventEmitter.emit('questsData', body['quests'][game.toLowerCase()])
+        this.EventEmitter.emit('data','quests', body['quests'][game.toLowerCase()])
+        this.EventEmitter.emit('resourceData', body['quests'][game.toLowerCase()])
         return body['quests'][game.toLowerCase()];
     }
 
@@ -329,6 +390,9 @@ class Hynfo {
         }).send()
         const body = await res.json()
         if(!body.success) throw new Error(body.cause || body)
+        this.EventEmitter.emit('lbData', body)
+        this.EventEmitter.emit('data', 'leaderboards', body)
+        this.EventEmitter.emit('resourceData', body)
         return body;
         
     }
@@ -346,6 +410,9 @@ class Hynfo {
         }).send()
         const body = await res.json()
         if(!body.success) throw new Error(body.cause || body)
+        this.EventEmitter.emit('lbData', body)
+        this.EventEmitter.emit('data', 'leaderboards',body)
+        this.EventEmitter.emit('resourceData', body)
         return body['leaderboards'][mode.toUpperCase()];
     }
 
@@ -357,6 +424,9 @@ class Hynfo {
         const res = await centra(hypixelURL).path('/resources/guilds/achievements').send()
         const body = await res.json()
         if(!body.success) throw new Error(body.cause || body)
+        this.EventEmitter.emit('guildData', body)
+        this.EventEmitter.emit('data', 'guildachievements', body)
+        this.EventEmitter.emit('resourceData', body)
         return body;
 
     }
@@ -368,6 +438,9 @@ class Hynfo {
         const res = await centra(hypixelURL).path('/resources/guilds/permissions').send()
         const body = await res.json()
         if(!body.success) throw new Error(body.cause || body)
+        this.EventEmitter.emit('guildData', body)
+        this.EventEmitter.emit('data', 'guildperms', body)
+        this.EventEmitter.emit('resourceData', body)
         return body;
     }
 
