@@ -5,7 +5,7 @@ This is an API wrapper package for Minecraft's most popular server, Hypixel!
 
 ```javascript
 const Hynfo = require('hynfo');
-const client = new Hynfo({key: 'YOUR_HYPIXEL_API_KEY'})
+const client = new Hynfo({api_key: 'YOUR_HYPIXEL_API_KEY'})
 // use '/api new' in-game to get your api key!
 
 client.getPlayer('YaNuu_').then(async res => {

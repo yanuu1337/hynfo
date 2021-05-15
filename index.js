@@ -53,7 +53,7 @@ class Hynfo {
             throw new Error(jsonified.errorMessage || jsonified)
         } else {
             this.EventEmitter.emit('nameReceive', jsonified)
-            this.EventEmitter.emit('data', jsonified)
+            this.EventEmitter.emit('data', 'name', jsonified)
             return jsonified;
             
             
@@ -97,7 +97,7 @@ class Hynfo {
 
         if(!res.success) throw new Error(res.cause || res)
         this.EventEmitter.emit('guildData', res)
-        this.EventEmitter.emit('data', res)
+        this.EventEmitter.emit('data', 'guild', res)
         return res;
         
 
@@ -284,7 +284,7 @@ class Hynfo {
         const body = await res.json()
         if(!body.success) throw new Error(body.cause || body)
         this.EventEmitter.emit('watchdogData', body)
-        this.EventEmitter.emit('data', body)
+        this.EventEmitter.emit('data', 'watchdog',body)
         this.EventEmitter.emit('resourceData', body)
         return body;
     }
